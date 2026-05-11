@@ -1,0 +1,29 @@
+# Generated data and experiment artifacts
+data/
+outputs/
+checkpoints/
+wandb/
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Notebook caches
+.ipynb_checkpoints/
+
+# Environment and local secrets
+.env
+.env.*
+.venv/
+venv/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
