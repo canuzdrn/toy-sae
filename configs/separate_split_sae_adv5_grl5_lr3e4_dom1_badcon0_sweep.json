@@ -1,0 +1,72 @@
+[
+  {
+    "name": "sweep_default_adv5_grl5_badcon0_dom1_lr3e4_seed3",
+    "train_script": "scripts/train/train_separate_split_sae.py",
+    "lr": 0.0003,
+    "lambda_recon": 1.0,
+    "lambda_good_recon": 0.0,
+    "lambda_badcon": 0.0,
+    "lambda_adv": 5.0,
+    "grl_lambda": 5.0,
+    "lambda_dom": 1.0,
+    "lambda_sparse_good": 0.0,
+    "lambda_sparse_bad": 0.0,
+    "seed": 3
+  },
+  {
+    "name": "sweep_default_adv5_grl5_badcon0_dom1_lr3e4_seed4",
+    "train_script": "scripts/train/train_separate_split_sae.py",
+    "lr": 0.0003,
+    "lambda_recon": 1.0,
+    "lambda_good_recon": 0.0,
+    "lambda_badcon": 0.0,
+    "lambda_adv": 5.0,
+    "grl_lambda": 5.0,
+    "lambda_dom": 1.0,
+    "lambda_sparse_good": 0.0,
+    "lambda_sparse_bad": 0.0,
+    "seed": 4
+  },
+  {
+    "name": "sweep_default_adv5_grl5_badcon0_dom1_lr3e4_seed5",
+    "train_script": "scripts/train/train_separate_split_sae.py",
+    "lr": 0.0003,
+    "lambda_recon": 1.0,
+    "lambda_good_recon": 0.0,
+    "lambda_badcon": 0.0,
+    "lambda_adv": 5.0,
+    "grl_lambda": 5.0,
+    "lambda_dom": 1.0,
+    "lambda_sparse_good": 0.0,
+    "lambda_sparse_bad": 0.0,
+    "seed": 5
+  },
+  {
+    "name": "sweep_default_adv5_grl5_badcon0_dom1_lr3e4_seed6",
+    "train_script": "scripts/train/train_separate_split_sae.py",
+    "lr": 0.0003,
+    "lambda_recon": 1.0,
+    "lambda_good_recon": 0.0,
+    "lambda_badcon": 0.0,
+    "lambda_adv": 5.0,
+    "grl_lambda": 5.0,
+    "lambda_dom": 1.0,
+    "lambda_sparse_good": 0.0,
+    "lambda_sparse_bad": 0.0,
+    "seed": 6
+  },
+  {
+    "name": "sweep_default_adv5_grl5_badcon0_dom1_lr3e4_seed7",
+    "train_script": "scripts/train/train_separate_split_sae.py",
+    "lr": 0.0003,
+    "lambda_recon": 1.0,
+    "lambda_good_recon": 0.0,
+    "lambda_badcon": 0.0,
+    "lambda_adv": 5.0,
+    "grl_lambda": 5.0,
+    "lambda_dom": 1.0,
+    "lambda_sparse_good": 0.0,
+    "lambda_sparse_bad": 0.0,
+    "seed": 7
+  }
+]

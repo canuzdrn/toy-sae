@@ -1,0 +1,16 @@
+[
+  {
+    "name": "sweep_default_adv5_grl5_badcon0_dom1_lr3e4_seed8",
+    "train_script": "scripts/train/train_separate_split_sae.py",
+    "lr": 0.0003,
+    "lambda_recon": 1.0,
+    "lambda_good_recon": 0.0,
+    "lambda_badcon": 0.0,
+    "lambda_adv": 5.0,
+    "grl_lambda": 5.0,
+    "lambda_dom": 1.0,
+    "lambda_sparse_good": 0.0,
+    "lambda_sparse_bad": 0.0,
+    "seed": 8
+  }
+]
