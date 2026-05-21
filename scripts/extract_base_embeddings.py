@@ -19,6 +19,8 @@ if str(SRC_ROOT) not in sys.path:
 
 from toy_sae.datasets.npz_dataset import ColoredMNISTNPZDataset
 from toy_sae.models.base_autoencoder import ConvAutoencoder
+from toy_sae.utils.checkpoints import load_checkpoint
+from toy_sae.utils.torch_utils import get_device
 
 
 DEFAULT_SPLITS = [
@@ -43,19 +45,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_device():
-    if torch.cuda.is_available():
-        return torch.device("cuda")
-    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-        return torch.device("mps")
-    return torch.device("cpu")
-
-
 def load_model(checkpoint_path, device):
-    try:
-        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
-    except TypeError:
-        checkpoint = torch.load(checkpoint_path, map_location="cpu")
+    checkpoint = load_checkpoint(checkpoint_path)
     embedding_dim = checkpoint["embedding_dim"]
     model = ConvAutoencoder(embedding_dim=embedding_dim)
     model.load_state_dict(checkpoint["model_state_dict"])
