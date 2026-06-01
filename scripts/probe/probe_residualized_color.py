@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Probe color after removing linear digit/group subspaces from split-SAE latents.
 
 This diagnostic asks whether color is recoverable from a latent only because the

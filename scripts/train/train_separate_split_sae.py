@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Train a separate-encoder residual split SAE on frozen base-AE embeddings."""
 
 import argparse

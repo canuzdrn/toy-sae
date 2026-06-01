@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Post-hoc probes for z_good and z_bad from a separate-encoder split SAE."""
 
 import argparse

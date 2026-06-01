@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Train separate split-SAE and checkpoint by fresh post-hoc z_good invariance."""
 
 import argparse

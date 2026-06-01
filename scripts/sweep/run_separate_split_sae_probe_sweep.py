@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Run post-hoc probes for completed separate split-SAE runs."""
 
 import argparse

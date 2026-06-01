@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Generate the foreground-colored MNIST splits for the toy split-SAE project."""
 
 import argparse

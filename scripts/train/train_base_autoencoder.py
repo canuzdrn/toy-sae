@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Train the base convolutional autoencoder on balanced ColoredMNIST."""
 
 import argparse

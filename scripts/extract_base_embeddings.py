@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Extract frozen base-autoencoder embeddings for all ColoredMNIST splits."""
 
 import argparse

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Train simple probes for digit, digit-group, and color information in embeddings."""
 
 import argparse

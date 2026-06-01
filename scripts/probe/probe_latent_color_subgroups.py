@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Train post-hoc color probes within fixed digit groups and digits.
 
 This script is a stricter companion to the global latent probe scripts. A

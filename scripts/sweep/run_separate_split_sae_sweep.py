@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Train separate split-SAE sweep configs one after another."""
 
 import argparse
