@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Visualize color separability in split-SAE latents.
 
 This script is a qualitative debugging tool. It loads a trained split-SAE run
@@ -45,6 +44,7 @@ from toy_sae.utils.torch_utils import get_device
 DEFAULT_SPLITS = ["test_balanced"]
 LATENT_NAMES = ["z_good", "z_bad"]
 PROJECTION_METHODS = ["pca", "tsne", "umap"]
+PER_DIGIT_METHODS = {"pca", "umap"}
 PROJECTION_DIMS = [2, 3]
 COLOR_NAMES = {0: "red", 1: "green"}
 COLOR_PALETTE = {0: "#d62728", 1: "#2ca02c"}
@@ -77,6 +77,15 @@ def parse_args():
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--digits", nargs="*", type=int, default=[])
+    parser.add_argument(
+        "--per-digit-plots",
+        action="store_true",
+        help=(
+            "Save per-digit color-separation plots for PCA and UMAP. If --digits "
+            "is omitted, digits 0-9 are used. Plots are written under "
+            "<method>/digit/."
+        ),
+    )
     parser.add_argument("--tsne-perplexity", type=float, default=30.0)
     parser.add_argument("--no-balanced-sample", action="store_true")
     parser.add_argument("--no-standardize-latents", action="store_true")
@@ -318,20 +327,22 @@ def plot_projection(
         )
         saved_paths.append(path)
 
-    for digit in digits:
-        mask = labels["digits"] == digit
-        if mask.sum() == 0:
-            continue
-        path = out_dir / f"{base}_digit_{digit}_colored_by_color.png"
-        save_plot(
-            coords[mask],
-            labels["colors"][mask],
-            COLOR_PALETTE,
-            COLOR_NAMES,
-            f"{title_prefix}: digit {digit}, colored by color",
-            path,
-        )
-        saved_paths.append(path)
+    if method in PER_DIGIT_METHODS:
+        digit_out_dir = out_dir / "digit"
+        for digit in digits:
+            mask = labels["digits"] == digit
+            if mask.sum() == 0:
+                continue
+            path = digit_out_dir / f"{base}_digit_{digit}_colored_by_color.png"
+            save_plot(
+                coords[mask],
+                labels["colors"][mask],
+                COLOR_PALETTE,
+                COLOR_NAMES,
+                f"{title_prefix}: digit {digit}, colored by color",
+                path,
+            )
+            saved_paths.append(path)
 
     return saved_paths
 
@@ -356,6 +367,9 @@ def projection_metrics(coords, labels):
 def main():
     args = parse_args()
     device = get_device()
+    per_digit_plot_digits = args.digits
+    if args.per_digit_plots and not per_digit_plot_digits:
+        per_digit_plot_digits = list(range(10))
 
     checkpoint_path = resolve_checkpoint_path(args.checkpoint_dir, args.checkpoint_name)
     run_dir = checkpoint_path.parent
@@ -438,7 +452,7 @@ def main():
                         method,
                         projection_metadata,
                         method_output_dir,
-                        args.digits,
+                        per_digit_plot_digits if args.per_digit_plots else [],
                     )
                     dim_key = f"{n_components}d"
                     method_summary[dim_key] = {
