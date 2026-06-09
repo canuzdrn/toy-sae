@@ -54,6 +54,15 @@ def parse_args():
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--max-iter", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--model-family",
+        choices=["shared", "simple_shared", "factorized_style", "auto"],
+        default="shared",
+        help=(
+            "Checkpoint model family. Use auto for architecture-tagged "
+            "factorized or simple checkpoints."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -219,12 +228,12 @@ def main():
 
     device = get_device()
     checkpoint = load_checkpoint(args.checkpoint)
-    model = load_split_sae_model(checkpoint, device, model_family="shared")
+    model = load_split_sae_model(checkpoint, device, model_family=args.model_family)
     mean, std = load_scaler(args.scaler)
 
     print(f"Using device: {device}")
     print(f"Checkpoint: {args.checkpoint}")
-    print("Model: shared-encoder split SAE")
+    print(f"Model family: {args.model_family}")
     print(f"Scaler: {args.scaler}")
     print(f"Probe train split: {args.train_split}")
 
@@ -270,7 +279,7 @@ def main():
     payload = {
         "command": command_string(),
         "checkpoint": str(args.checkpoint),
-        "model": "shared_encoder_split_sae",
+        "model": args.model_family,
         "checkpoint_args": checkpoint["args"],
         "probe_args": args_to_dict(args),
         "scaler": str(args.scaler),

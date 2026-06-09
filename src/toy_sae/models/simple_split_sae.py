@@ -31,7 +31,7 @@ class SimpleSplitSparseAutoencoder(nn.Module):
         input_dim=64,
         hidden_dim=128,
         good_latent_dim=128,
-        bad_latent_dim=32,
+        bad_latent_dim=16,
         num_colors=2,
     ):
         super().__init__()

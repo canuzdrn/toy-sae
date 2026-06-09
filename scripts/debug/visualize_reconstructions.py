@@ -17,7 +17,7 @@ if str(SRC_ROOT) not in sys.path:
 from toy_sae.models.base_autoencoder import ConvAutoencoder
 from toy_sae.utils.checkpoints import load_checkpoint, resolve_checkpoint_path
 from toy_sae.utils.embeddings import load_scaler
-from toy_sae.utils.split_sae_loading import load_split_sae_model
+from toy_sae.utils.split_sae_loading import infer_model_family, load_split_sae_model
 from toy_sae.utils.torch_utils import get_device
 
 
@@ -153,6 +153,12 @@ def main():
         raise FileNotFoundError(f"Missing embedding scaler: {args.scaler}")
 
     checkpoint = load_checkpoint(checkpoint_path)
+    model_family = infer_model_family(checkpoint)
+    if model_family == "factorized_style":
+        raise ValueError(
+            "Factorized checkpoints do not have a standalone bad reconstruction. "
+            "Use scripts/debug/visualize_factorized_reconstructions.py instead."
+        )
     split_sae = load_split_sae_model(checkpoint, device, model_family="auto")
     base_ae = load_base_autoencoder(args.base_checkpoint, device)
 
