@@ -18,6 +18,12 @@ dist/
 # Notebook caches
 .ipynb_checkpoints/
 
+# Generated documents and images
+*.png
+*.md
+*.tex
+*.pdf
+
 # Environment and local secrets
 .env
 .env.*
