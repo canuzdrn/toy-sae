@@ -189,6 +189,8 @@ def resolve_args(args):
         "phase2_lambda_bad_residual",
         "lambda_badcon",
         "phase2_lambda_badcon",
+        "lambda_sparse_good",
+        "lambda_sparse_bad",
         "lambda_style_selection",
         "phase2_lambda_style_selection",
     ]
@@ -309,7 +311,18 @@ def effective_args_for_epoch(args, epoch):
     schedule["lambda_style_selection_current"] = (
         effective.lambda_style_selection
     )
+    schedule["lambda_sparse_good_current"] = effective.lambda_sparse_good
+    schedule["lambda_sparse_bad_current"] = effective.lambda_sparse_bad
     return effective, schedule
+
+
+def extended_latent_stats(z):
+    stats = latent_stats(z)
+    for threshold_name, threshold in [("1e3", 1e-3), ("1e2", 1e-2)]:
+        active_fraction = (z > threshold).float().mean()
+        stats[f"active_frac_{threshold_name}"] = active_fraction
+        stats[f"active_count_{threshold_name}"] = active_fraction * z.shape[1]
+    return stats
 
 
 def run_epoch(model, loader, main_optimizer, head_optimizer, device, args, schedule, training):
@@ -344,10 +357,22 @@ def run_epoch(model, loader, main_optimizer, head_optimizer, device, args, sched
         "z_bad_active_frac",
         "z_good_active_count",
         "z_bad_active_count",
+        "z_good_active_frac_1e3",
+        "z_bad_active_frac_1e3",
+        "z_good_active_count_1e3",
+        "z_bad_active_count_1e3",
+        "z_good_active_frac_1e2",
+        "z_bad_active_frac_1e2",
+        "z_good_active_count_1e2",
+        "z_bad_active_count_1e2",
+        "style_selector_input_weight_rms",
     ]
     totals = {name: 0.0 for name in metric_names}
     for style_index in range(model.num_styles):
         totals[f"style_usage_{style_index}"] = 0.0
+    for latent_index in range(model.bad_latent_dim):
+        totals[f"z_bad_dim_{latent_index}_active_frac"] = 0.0
+        totals[f"z_bad_dim_{latent_index}_mean_abs"] = 0.0
     if training:
         totals["head_update_loss"] = 0.0
     total_examples = 0
@@ -499,8 +524,11 @@ def run_epoch(model, loader, main_optimizer, head_optimizer, device, args, sched
                 main_optimizer.step()
                 set_color_heads_trainable(model, True)
 
-            good_stats = latent_stats(z_good)
-            bad_stats = latent_stats(z_bad_for_stats)
+            good_stats = extended_latent_stats(z_good)
+            bad_stats = extended_latent_stats(z_bad_for_stats)
+            selector_input_weight_rms = (
+                model.style_selector[0].weight.square().mean().sqrt()
+            )
             values = {
                 "total_loss": total_loss,
                 "base_total_loss": base_total_loss,
@@ -530,6 +558,15 @@ def run_epoch(model, loader, main_optimizer, head_optimizer, device, args, sched
                 "z_bad_active_frac": bad_stats["active_fraction"],
                 "z_good_active_count": good_stats["active_count"],
                 "z_bad_active_count": bad_stats["active_count"],
+                "z_good_active_frac_1e3": good_stats["active_frac_1e3"],
+                "z_bad_active_frac_1e3": bad_stats["active_frac_1e3"],
+                "z_good_active_count_1e3": good_stats["active_count_1e3"],
+                "z_bad_active_count_1e3": bad_stats["active_count_1e3"],
+                "z_good_active_frac_1e2": good_stats["active_frac_1e2"],
+                "z_bad_active_frac_1e2": bad_stats["active_frac_1e2"],
+                "z_good_active_count_1e2": good_stats["active_count_1e2"],
+                "z_bad_active_count_1e2": bad_stats["active_count_1e2"],
+                "style_selector_input_weight_rms": selector_input_weight_rms,
             }
             total_examples += batch_size
             for name, value in values.items():
@@ -538,6 +575,15 @@ def run_epoch(model, loader, main_optimizer, head_optimizer, device, args, sched
             for style_index in range(model.num_styles):
                 totals[f"style_usage_{style_index}"] += (
                     style_usage[style_index].item() * batch_size
+                )
+            z_bad_detached = z_bad_for_stats.detach()
+            for latent_index in range(model.bad_latent_dim):
+                latent_values = z_bad_detached[:, latent_index]
+                totals[f"z_bad_dim_{latent_index}_active_frac"] += (
+                    (latent_values > 1e-3).float().mean().item() * batch_size
+                )
+                totals[f"z_bad_dim_{latent_index}_mean_abs"] += (
+                    latent_values.abs().mean().item() * batch_size
                 )
             if training and head_update_loss is not None:
                 totals["head_update_loss"] += head_update_loss * batch_size
@@ -711,6 +757,8 @@ def main():
             f"lambda_recon={schedule['lambda_recon_current']:.3g} "
             f"lambda_pair={schedule['lambda_pair_current']:.3g} "
             f"lambda_badcon={schedule['lambda_badcon_current']:.3g} "
+            f"lambda_sparse_good={schedule['lambda_sparse_good_current']:.3g} "
+            f"lambda_sparse_bad={schedule['lambda_sparse_bad_current']:.3g} "
             f"lambda_style={schedule['lambda_style_selection_current']:.3g} | "
             f"val_loss={val_metrics['total_loss']:.6f} "
             f"val_recon={val_metrics['recon_mse']:.6f} "
